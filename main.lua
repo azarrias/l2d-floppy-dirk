@@ -8,7 +8,12 @@ GROUND_HEIGHT = 16
 
 -- local variable; won't be accessible outside from this file
 local background = love.graphics.newImage('assets/background.png')
+local backgroundScroll = 0
 local ground = love.graphics.newImage('assets/ground.png')
+local groundScroll = 0
+local BACKGROUND_SCROLL_SPEED = 30
+local BACKGROUND_LOOPING_X = 413
+local GROUND_SCROLL_SPEED = 60
 
 function love.load()
   -- use nearest-neighbor (point) filtering on upscaling and downscaling to prevent blurring of text and 
@@ -32,9 +37,14 @@ function love.keypressed(key)
   end
 end
 
+function love.update(dt)
+  backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_X
+  groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+end
+
 function love.draw()
   push:start()
-  love.graphics.draw(background, 0, 0)
-  love.graphics.draw(ground, 0, VIRTUAL_HEIGHT - GROUND_HEIGHT)
+  love.graphics.draw(background, -backgroundScroll, 0)
+  love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - GROUND_HEIGHT)
   push:finish()
 end
