@@ -6,18 +6,20 @@ addons:
     packages:
     - lua5.3
     - python2.7
-  
-script: "[[ -n $TRAVIS_TAG ]] && ./build.sh web || ./build.sh" # web only for tags
+
+# web build is not working as of now
+# script: "[[ -n $TRAVIS_TAG ]] && ./build.sh web || ./build.sh" # web only for tags    
+script: "./build.sh"
 deploy:
   provider: releases
   skip_cleanup: true
   api_key:
     # travis encrypt <token> 
-    secure: cfET/I6qwtYOiM1lhk/EgwTmmkcS2p/KtZHQl88wNIkv9gfn1ZfxONXrz+zZBcTCwg7j0qRjXqWT9HcuBes0HUMQekYzD+bXr2a3xMCM29ID7MwDG7YfOKhaTZnHCJZwxvjouaZzl3brDheL8wzR4PSQPljm5xegNXalA1w9DFkc2PsOoVVePuBI5+IuJYdp2P5d19XNcRzBgmmCL50tl3+Qk9gQWzNdOAdwnBDKxvKOIacp2/9bSS+UaUVR5FSRoveiJruz5VbBJsCZXoP7ISKPtNL1UBGHVIidGQQxSGOlGcrurKqTDtdmGLagRlHKDRvCGkcymc5KEPI0T1nGOfDksMZLnWyQheB6iv0vd3/Ok9CzyiJemXC/w5PoyhkiA26YdeYu+5o7kxGmZaw8WRwAFUTREJw1yxW/78cKPUtVcHQC26vxYsgQ2SbScQZq6yrgKztc8yvIPBuS+nq0GTNSsqgY/lBlXYnWVlM8EfXnigfe3WAqsOOtr6CZG51aoJz0weWEGrEXAc+9qLh+ssKluzT1ZGmTFDe8j+s3goNfiue4cddvEMRPdcbPKy44IcPHUhmdIS3Et6nPrlx0vFXiRtmxh7NK7iA7mFvTLOFBfZd82ad7Ql9nV4QM2zy67kwB2FtXVMhWvH6bbo3E33RlaITg2/6Ogp8XIHyGmVc=
+    secure: SuFYLO+qAR5MjK7VrE/yMv2Bg1agFYHAfI5zdJmVy5fRWnul4pkQy6qorzhZiionHOk82z/n8A7Od3DVS/UqcSrpT+j59jeTt3xHe0z31OK7xvQedu/TswQKLRk3AhSne0sfXG0nsEsd96WjOT7rMphTGYXVm8xZcK6oskeLKxpM1ergYcxsqhx67xQGLf1T4UKgiHABE7wxnSdyoESxmhQUgfBy6ZVR7At7HkUiAU/VK7Y5SZS8/HfCGk+PGhwAayyT6fu3NiTaVmbUSuT3ASCFov8keLrWztVRxyCzv9MjkWvbh6KMoCsdLNI8rrZP0Gm1F7rV+pIosivYU71ndoJ3iRTGqTrF9uxS8nFUnP5r+9+IfnXXtMVoz1zNtxmhfwa0JGey3JFhgjK/NOgW84npIRzrzZzxJkJb/3UEjPM2SLNDpS2zh6lzGnTslKGenCJvNBHB5xgnXPfhu5Oq7V56/QplG+FawAn8BMyXmclAvd6xqDY6CHEnOjIxiJHC8fk/+czhCfy59UDHItUBb8nefHHSq7w+OVc3UAUnT5wM5LS2PaXxPfY/h4AgOcD6GDfIphAo1axVkBg2j01qnvaPZU5OXbTGci6CuosKT/3pE9G/hVF9ifvTsXyk5zExnyhKWZdrh9zxrESgtZ0BXRceZNBUshcxKWB6ht0deto=
   file:
   - target/floppy_dirk.love
   - target/floppy_dirk-win.zip
-#  - target/pong-web.zip
+#  - target/-web.zip
   on:
     tags: true
     all_branches: true
@@ -26,4 +28,4 @@ after_success:
 env:
   global:
    # travis encrypt GH_TOKEN=<token>
-  - secure: GSvLbHt8J4wJux2hM/K0wokEvK7j69ml/G42OYwb/uE18VfNHEKSAlmoUVO5C73yb5E68aSbkYGlVt6HLpFoyEOy0QM3eA9DYDI5NHG5X+eFfQCVOJE0HVG6Fxp5vVYxcR7go0Dep37lt6486UmNv9IUmIzrJGUHPxneNq3LG86/YNwGMZ8gZ+FQvNBUjQRp3zOJwmgynuSyIRQmhd2lg+ukFysTIpDW6L3+7wg3geh+CAOBJslFYTIDnXcwyGdPV7+hgqokkL+bCJoxtRIlYcjUg510XX/wgPzhJfA+XrmFGIHwkN/GAz9MKEKPKDJRO2ju+v9k56Ly1gJzLuTRDmgpmXyINmlwtxms5+Xrb/7Htyb9gOAXKLBbNsNjen6cZL82n/FiyEbBy+SSpQ2mp3EUdjM5czI9OrVEtZPhbutBKnkPjTRLB2VaXhOJX8gp4Oxe+Il2UQLhwYFpYnEZ1LHS7RsJQ3GWaoM2PJvp257hwf2/eiNnj0g/uSc5TxCLW9uteC1AmUVZkcrmCzSi8TapdrWPKNOj6Aqohx5r84iefJHMc0p3bjnRct+KWGBJw8l/tA4kPE3XbmvC84uyjuvvb9d4U78bG2dhZYDKiU4B5jip+o9RWAQrGFuNJqn+8PXLKNiLbie03wopI4v5JF0Iif1dZuXpPE5+J859i48=
+  - secure: gBf+Se51Zjp5Dan+r2T8wTWf9VMxxPTX7+/5jAZQ8vqEJ5UJ+W9kbTXqe1FI66Yfe9SlF3rhTwfw7MtFuXIaDPYbP8smSOGshb7AiTaqZ02oLh+sm4w8/3OrC9yY4/BCfZmv/H+rNlsGYibfz9gFEAzzUME4qeoZ7D8R8oiiGfWFOfgRnv2Z4T6BO54XUjk9j2710vO/54zAzUMv4+enhnKetqV2g5q5/zBlRYm18xIN7vS7Sj5u9l2w33urxToA8eODZq0YTPasCYr6yp6sqEhPx7m1FRWKzvnPdftZ5ipws7iDR1ngaLulb/bzge+C3t1O3q7gfMge3n3Z2MqeVDw45PaufyEzYHjLo4GmouD7rAjneifOMWgL0wPA5l3E+RHOKFJbDFLDmr7ovBuuIg56ppaA8r5AlC4OWyNKvZ9ipyYFMWqdgIlJ23WIrw7Cmm8CIOz3s6wxCMla/6s1oHZrdbPSt81mZ0xdpgVzue+MPT1mFwNxwNmOqbs4LjvKUAfGN8FQoIyj0bTrxi1pEYNH7M+ZN40iXr+fpgKLteGjwDaLX+c1N8dOXGTZQin4JqkS5+6d2QKavOP1EoJyRGigrYScpQkcS5nqOcipHvNx96qQTFNKCnlZokNlW3PPizMs+Jjlulc8Abd+VwQiBpJvvz06aMJqsD5jYkgACFI=
