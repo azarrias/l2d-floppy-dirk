@@ -24,7 +24,9 @@ deploy:
     tags: true
     all_branches: true
 after_success:
-- "[[ -n $TRAVIS_TAG ]] && ./build.sh deploy $TRAVIS_REPO_SLUG"
+# web build is not working as of now
+#- "[[ -n $TRAVIS_TAG ]] && ./build.sh deploy $TRAVIS_REPO_SLUG"
+- "[[ -n $TRAVIS_TAG ]] && ./build.sh"
 env:
   global:
    # travis encrypt GH_TOKEN=<token>
