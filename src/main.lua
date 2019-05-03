@@ -2,6 +2,7 @@ push = require 'libs.push'
 Class = require 'libs.class'
 require 'Bird'
 require 'Pipe'
+require 'PipePair'
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -20,8 +21,9 @@ local GROUND_SCROLL_SPEED = 60
 local SPAWN_PERIOD = 2
 
 local bird = Bird()
-local pipes = {}
+local pipePairs = {}
 local spawnTimer = 0
+local lastGapY = -PIPE_HEIGHT + math.random(80) + 20
 
 function love.load()
   -- use nearest-neighbor (point) filtering on upscaling and downscaling to prevent blurring of text and 
@@ -55,18 +57,25 @@ function love.update(dt)
   
   spawnTimer = spawnTimer + dt
   if spawnTimer > SPAWN_PERIOD then
-    table.insert(pipes, Pipe())
+    -- clamp the Y position of the pipes gap while transitioning smoothly from one to another
+    local y = math.max(-PIPE_HEIGHT + 10, math.min(lastGapY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
+    lastGapY = y
+    table.insert(pipePairs, PipePair(y))
     spawnTimer = 0
   end
   
   bird:update(dt)
   
-  for k, pipe in pairs(pipes) do
-    pipe:update(dt)
-    if pipe.x + pipe.width < 0 then
-      table.remove(pipes, k)
+  for k, pipePair in pairs(pipePairs) do
+    pipePair:update(dt)
+  end
+  
+  for k, pipePair in pairs(pipePairs) do
+    if pipePair.remove then
+      table.remove(pipePairs, k)
     end
   end
+  
   -- reset input table
   love.keyboard.keysPressed = {}
 end
@@ -75,8 +84,8 @@ function love.draw()
   push:start()
   love.graphics.draw(background, -backgroundScroll, 0)
   
-  for k, pipe in pairs(pipes) do
-    pipe:render()
+  for k, pipePair in pairs(pipePairs) do
+    pipePair:render()
   end
   
   love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - GROUND_HEIGHT)
