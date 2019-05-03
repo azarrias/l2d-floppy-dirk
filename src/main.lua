@@ -1,6 +1,7 @@
 push = require 'libs.push'
 Class = require 'libs.class'
 require 'Bird'
+require 'Pipe'
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -16,14 +17,18 @@ local groundScroll = 0
 local BACKGROUND_SCROLL_SPEED = 30
 local BACKGROUND_LOOPING_X = 413
 local GROUND_SCROLL_SPEED = 60
+local SPAWN_PERIOD = 2
 
 local bird = Bird()
+local pipes = {}
+local spawnTimer = 0
 
 function love.load()
   -- use nearest-neighbor (point) filtering on upscaling and downscaling to prevent blurring of text and 
   -- graphics instead of the bilinear filter that is applied by default 
   love.graphics.setDefaultFilter('nearest', 'nearest')
   love.window.setTitle('Floppy Dirk')
+  math.randomseed(os.time())
   push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
     vsync = true,
     fullscreen = false,
@@ -47,13 +52,33 @@ end
 function love.update(dt)
   backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_X
   groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+  
+  spawnTimer = spawnTimer + dt
+  if spawnTimer > SPAWN_PERIOD then
+    table.insert(pipes, Pipe())
+    spawnTimer = 0
+  end
+  
   bird:update(dt)
+  
+  for k, pipe in pairs(pipes) do
+    pipe:update(dt)
+    if pipe.x + pipe.width < 0 then
+      table.remove(pipes, k)
+    end
+  end
+  -- reset input table
   love.keyboard.keysPressed = {}
 end
 
 function love.draw()
   push:start()
   love.graphics.draw(background, -backgroundScroll, 0)
+  
+  for k, pipe in pairs(pipes) do
+    pipe:render()
+  end
+  
   love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - GROUND_HEIGHT)
   bird:render()
   push:finish()
