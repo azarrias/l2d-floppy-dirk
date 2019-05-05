@@ -1,11 +1,15 @@
 PlayState = Class{__includes = BaseState}
 
 local SPAWN_PERIOD = 2
+local SCORE_POS_OFFSET = 8
 
 function PlayState:init()
   self.bird = Bird()
   self.pipePairs = {}
   self.spawnTimer = 0
+  
+  self.score = 0
+  
   self.lastGapY = -PIPE_HEIGHT + math.random(80) + 20
 end
 
@@ -32,14 +36,26 @@ function PlayState:update(dt)
   self.bird:update(dt)
   
   if self.bird.y >= VIRTUAL_HEIGHT - GROUND_HEIGHT then
-    stateMachine:change('title')
+    stateMachine:change('score', { 
+      score = self.score 
+    })
   end
     
-  for i, pipePair in pairs(self.pipePairs) do    
-    for j, pipe in pairs(pipePair.pipes) do
-      if self.bird:collides(pipe) then
-        -- for now just game over if bird collides with pipe
-        stateMachine:change('title')
+  for i, pipePair in pairs(self.pipePairs) do
+    -- score a point if the bird has gone past this pair of pipes
+    if not pipePair.scored then
+      if pipePair.x + PIPE_WIDTH < self.bird.x then
+        self.score = self.score + 1
+        pipePair.scored = true
+      else
+        -- otherwise, check each pipe for collisions
+        for j, pipe in pairs(pipePair.pipes) do
+          if self.bird:collides(pipe) then
+            stateMachine:change('score', { 
+              score = self.score 
+            })
+          end
+        end   
       end
     end
   end
@@ -49,6 +65,9 @@ function PlayState:render()
   for k, pipePair in pairs(self.pipePairs) do
     pipePair:render()
   end
+  
+  love.graphics.setFont(bigFont)
+  love.graphics.print('Score: ' .. tostring(self.score), SCORE_POS_OFFSET, SCORE_POS_OFFSET)
   
   self.bird:render()
 end

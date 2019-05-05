@@ -7,6 +7,7 @@ require 'StateMachine'
 require 'BaseState'
 require 'PlayState'
 require 'TitleScreenState'
+require 'ScoreState'
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -46,7 +47,8 @@ function love.load(arg)
 
   stateMachine = StateMachine {
     ['title'] = function() return TitleScreenState() end,
-    ['play'] = function() return PlayState() end
+    ['play'] = function() return PlayState() end,
+    ['score'] = function() return ScoreState() end
   }
   stateMachine:change('title')
   
