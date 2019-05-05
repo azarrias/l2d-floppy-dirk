@@ -30,6 +30,10 @@ function PlayState:update(dt)
   end
   
   self.bird:update(dt)
+  
+  if self.bird.y >= VIRTUAL_HEIGHT - GROUND_HEIGHT then
+    stateMachine:change('title')
+  end
     
   for i, pipePair in pairs(self.pipePairs) do    
     for j, pipe in pairs(pipePair.pipes) do
