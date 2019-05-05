@@ -3,12 +3,17 @@ Class = require 'libs.class'
 require 'Bird'
 require 'Pipe'
 require 'PipePair'
+require 'StateMachine'
+require 'BaseState'
+require 'PlayState'
+require 'TitleScreenState'
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 GROUND_HEIGHT = 16
+GAME_TITLE = 'Floppy Dirk'
 
 -- local variable; won't be accessible outside from this file
 local background = love.graphics.newImage('assets/background.png')
@@ -18,12 +23,7 @@ local groundScroll = 0
 local BACKGROUND_SCROLL_SPEED = 30
 local BACKGROUND_LOOPING_X = 413
 local GROUND_SCROLL_SPEED = 60
-local SPAWN_PERIOD = 2
 
-local bird = Bird()
-local pipePairs = {}
-local spawnTimer = 0
-local lastGapY = -PIPE_HEIGHT + math.random(80) + 20
 local scrolling = true
 
 function love.load(arg)
@@ -31,13 +31,27 @@ function love.load(arg)
   -- use nearest-neighbor (point) filtering on upscaling and downscaling to prevent blurring of text and 
   -- graphics instead of the bilinear filter that is applied by default 
   love.graphics.setDefaultFilter('nearest', 'nearest')
-  love.window.setTitle('Floppy Dirk')
+  love.window.setTitle(GAME_TITLE)
   math.randomseed(os.time())
+  
+  smallFont = love.graphics.newFont('assets/font.ttf', 8)
+  mediumFont = love.graphics.newFont('assets/flappy.ttf', 14)
+  bigFont = love.graphics.newFont('assets/flappy.ttf', 28)
+  hugeFont = love.graphics.newFont('assets/flappy.ttf', 56)
+  love.graphics.setFont(bigFont)
+  
   push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
     vsync = true,
     fullscreen = false,
     resizable = true
   })
+
+  stateMachine = StateMachine {
+    ['title'] = function() return TitleScreenState() end,
+    ['play'] = function() return PlayState() end
+  }
+  stateMachine:change('title')
+  
   -- global table to keep track of keys that are being pressed
   love.keyboard.keysPressed = {}
 end
@@ -54,11 +68,10 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-  if scrolling then
-    backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_X
-    groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+  backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_X
+  groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
     
-    spawnTimer = spawnTimer + dt
+--[[    spawnTimer = spawnTimer + dt
     if spawnTimer > SPAWN_PERIOD then
       -- clamp the Y position of the pipes gap while transitioning smoothly from one to another
       local y = math.max(-PIPE_HEIGHT + 10, math.min(lastGapY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
@@ -85,7 +98,9 @@ function love.update(dt)
         table.remove(pipePairs, k)
       end
     end
-  end
+  end]]
+  
+  stateMachine:update(dt)
   
   -- reset input table
   love.keyboard.keysPressed = {}
@@ -95,11 +110,8 @@ function love.draw()
   push:start()
   love.graphics.draw(background, -backgroundScroll, 0)
   
-  for k, pipePair in pairs(pipePairs) do
-    pipePair:render()
-  end
+  stateMachine:render()
   
   love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - GROUND_HEIGHT)
-  bird:render()
   push:finish()
 end

@@ -1,8 +1,8 @@
 Bird = Class{}
 
-local GRAVITY = 500
+local GRAVITY = 600
 local JUMP_ACCELERATION = -200
-local COLLISION_OFFSET = 8
+local COLLISION_OFFSET = 6
 
 function Bird:init()
   self.image = love.graphics.newImage('assets/bird.png')
