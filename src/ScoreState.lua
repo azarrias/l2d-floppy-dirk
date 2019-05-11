@@ -7,7 +7,7 @@ end
 function ScoreState:update(dt)
   -- go back to play state if enter is pressed
   if love.keyboard.keysPressed['enter'] or love.keyboard.keysPressed['return'] then
-    stateMachine:change('play')
+    stateMachine:change('countdown')
   end
 end
 

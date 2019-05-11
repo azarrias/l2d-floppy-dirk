@@ -7,6 +7,8 @@ P="floppy_dirk"
 LV="11.2"
 LZ="https://bitbucket.org/rude/love/downloads/love-${LV}-win32.zip"
 
+#NDK_VER="r14b"
+NDK_VER="r17c"
 
 ### clean
 
@@ -34,7 +36,6 @@ if [ "$1" == "deploy" ]; then
 fi
 
 
-
 ##### build #####
 
 find . -iname "*.lua" | xargs luac -p || { echo 'luac parse test failed' ; exit 1; }
@@ -53,6 +54,7 @@ lua lib/pink/pink/pink.lua parse game.ink > game.lua
 zip -9 -r - . > "../${P}.love"
 cd -
 
+
 ### .exe
 
 if [ ! -f "target/love-win.zip" ]; then wget "$LZ" -O "target/love-win.zip"; fi
@@ -68,6 +70,37 @@ zip -9 -r - "$P" > "${P}-win.zip"
 cd -
 cp "$tmp/${P}-win.zip" "target/"
 rm -r "$tmp"
+
+
+### android (WIP) 
+### love2d 11.2 does not seem to be supported for now
+if [ "$1" == "android" ]; then
+
+cd target
+git clone --single-branch --branch 0.11.x https://bitbucket.org/MartinFelis/love-android-sdl2
+wget https://dl.google.com/android/repository/android-ndk-"${NDK_VER}"-linux-x86_64.zip -O android-ndk.zip
+echo Installing android NDK...
+unzip android-ndk 1> /dev/null 2>&1
+ANDROID_NDK=`pwd`/android-ndk-"${NDK_VER}"
+export ANDROID_NDK
+mkdir android-sdk
+cd android-sdk
+wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O sdk-tools.zip
+echo Installing android SDK tools...
+unzip sdk-tools.zip 1> /dev/null 2>&1
+tools/bin/sdkmanager --update
+#yes | tools/bin/sdkmanager "build-tools;28.0.3" "platforms;android-28"
+yes | tools/bin/sdkmanager "build-tools;23.0.3" "platforms;android-23"
+yes | tools/bin/sdkmanager --licenses 
+cd - 
+ANDROID_SDK=`pwd`/android-sdk
+export ANDROID_SDK
+ANDROID_HOME=`pwd`/android-sdk
+export ANDROID_HOME
+cd love-android-sdl2
+chmod +x gradlew
+./gradlew build
+fi
 
 
 ### web
