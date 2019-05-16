@@ -76,7 +76,7 @@ rm -r "$tmp"
 ### android (WIP) 
 ### love2d 11.2 does not seem to be supported for now
 if [ "$2" == "android" ]; then
-
+jdk_switcher use openjdk8
 cd target
 git clone --single-branch --branch 0.10.x https://bitbucket.org/MartinFelis/love-android-sdl2
 #git clone https://bitbucket.org/MartinFelis/love-android-sdl2
