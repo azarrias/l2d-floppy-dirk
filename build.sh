@@ -87,24 +87,24 @@ sudo update-java-alternatives -s java-1.8.0-openjdk-amd64
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 cd target
-git clone --single-branch --branch 0.10.x https://bitbucket.org/MartinFelis/love-android-sdl2
+git clone --single-branch --branch 0.11.x https://bitbucket.org/MartinFelis/love-android-sdl2
 #git clone https://bitbucket.org/MartinFelis/love-android-sdl2
 mkdir -p love-android-sdl2/app/src/main/assets
 cp "${P}".love love-android-sdl2/app/src/main/assets/game.love
-wget https://dl.google.com/android/repository/android-ndk-"${NDK_VER}"-linux-x86_64.zip -O android-ndk.zip
+wget https://dl.google.com/android/repository/android-ndk-"${NDK_VER}"-linux-x86_64.zip -O android-ndk.zip 1> /dev/null 2>&1
 echo Installing android NDK...
 unzip android-ndk 1> /dev/null 2>&1
 ANDROID_NDK=`pwd`/android-ndk-"${NDK_VER}"
 export ANDROID_NDK
 mkdir android-sdk
 cd android-sdk
-wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O sdk-tools.zip
+wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O sdk-tools.zip 1> /dev/null 2>&1
 echo Installing android SDK tools...
 unzip sdk-tools.zip 1> /dev/null 2>&1
 tools/bin/sdkmanager --update
 #yes | tools/bin/sdkmanager "build-tools;28.0.3" "platforms;android-28"
 #yes | tools/bin/sdkmanager "build-tools;23.0.3" "platforms;android-23"
-yes | tools/bin/sdkmanager --licenses 
+yes | tools/bin/sdkmanager --licenses 1> /dev/null 2>&1
 cd - 
 ANDROID_SDK=`pwd`/android-sdk
 export ANDROID_SDK
@@ -148,9 +148,9 @@ if [ "$1" == "web" ]; then
 
 #git clone --single-branch --branch 0.11 https://github.com/TannerRogalsky/love.js
 
-wget https://nodejs.org/dist/"${NV}"/node-"${NV}"-linux-x64.tar.xz -O target/node-linux-x64.tar.xz
+wget https://nodejs.org/dist/"${NV}"/node-"${NV}"-linux-x64.tar.xz -O target/node-linux-x64.tar.xz 1> /dev/null 2>&1
 cd target
-tar xf node-linux-x64.tar.xz
+tar xf node-linux-x64.tar.xz 1> /dev/null 2>&1
 [[ ":$PATH:" != *":`pwd`/node-"${NV}"-linux-x64/bin:"* ]] && PATH="`pwd`/node-"${NV}"-linux-x64/bin:${PATH}"
 npm install -g love.js
 love.js --title "$P" "${P}".love "$P-web"
