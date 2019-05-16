@@ -25,6 +25,37 @@ local groundScroll = 0
 local BACKGROUND_SCROLL_SPEED = 30
 local BACKGROUND_LOOPING_X = 413
 local GROUND_SCROLL_SPEED = 60
+local NEW_COLOR_RANGE = love._version_major > 0 or love._version_major == 0 and love._version_minor >= 11
+local MOBILE_OS = (love._version_major > 0 or love._version_major >= 9) and (love.system.getOS() == 'Android' or love.system.getOS() == 'OS X')
+
+-- Wrapper functions to handle differences across love2d versions
+local setColor = function(r, g, b, a)
+  if not r or not g or not b or 
+    not tonumber(r) or not tonumber(g) or not tonumber(b) 
+    or a and not tonumber(a) then
+    error("bad argument to 'setColor' (number expected)")
+  end
+  a = a or 255
+  if NEW_COLOR_RANGE then
+    love.graphics.setColor(r/255, g/255, b/255, a/255)
+  else
+    love.graphics.setColor(r, g, b, a)
+  end
+end
+
+local clear = function(r, g, b, a, clearstencil, cleardepth)
+  if not r or not g or not b or 
+    not tonumber(r) or not tonumber(g) or not tonumber(b) 
+    or a and not tonumber(a) then
+    error("bad argument to 'clear' (number expected)")
+  end
+  a, clearstencil, cleardepth = a or 255, clearstencil or true, cleardepth or true
+  if NEW_COLOR_RANGE then
+    love.graphics.clear(r/255, g/255, b/255, a/255, clearstencil, cleardepth)
+  else
+    love.graphics.clear(r, g, b, a)
+  end
+end
 
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
@@ -53,8 +84,8 @@ function love.load(arg)
   
   push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
     vsync = true,
-    fullscreen = false,
-    resizable = true
+    fullscreen = MOBILE_OS,
+    resizable = not MOBILE_OS
   })
 
   stateMachine = StateMachine {

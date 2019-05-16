@@ -7,9 +7,7 @@ addons:
     - lua5.1
     - python2.7
 
-# web build is not working as of now
-# script: "[[ -n $TRAVIS_TAG ]] && ./build.sh web || ./build.sh" # web only for tags    
-script: "./build.sh"
+script: "[[ -n $TRAVIS_TAG ]] && ./build.sh web android || ./build.sh" # web and android only for tags    
 deploy:
   provider: releases
   skip_cleanup: true
@@ -19,14 +17,14 @@ deploy:
   file:
   - target/floppy_dirk.love
   - target/floppy_dirk-win.zip
-#  - target/-web.zip
+  - target/floppy_dirk-web.zip
+  - target/floppy_dirk-debug.apk
+  - target/floppy_dirk-release-unsigned.apk
   on:
     tags: true
     all_branches: true
 after_success:
-# web build is not working as of now
-#- "[[ -n $TRAVIS_TAG ]] && ./build.sh deploy $TRAVIS_REPO_SLUG"
-- "[[ -n $TRAVIS_TAG ]] && ./build.sh"
+- "[[ -n $TRAVIS_TAG ]] && ./build.sh deploy $TRAVIS_REPO_SLUG"
 env:
   global:
    # travis encrypt GH_TOKEN=<token>

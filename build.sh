@@ -4,11 +4,12 @@ set -x
 
 P="floppy_dirk"
 
-LV="11.2"
+LV="0.10.2"
 LZ="https://bitbucket.org/rude/love/downloads/love-${LV}-win32.zip"
+NV="v10.15.3"
 
-#NDK_VER="r14b"
-NDK_VER="r17c"
+NDK_VER="r14b"
+#NDK_VER="r17c"
 
 ### clean
 
@@ -74,10 +75,13 @@ rm -r "$tmp"
 
 ### android (WIP) 
 ### love2d 11.2 does not seem to be supported for now
-if [ "$1" == "android" ]; then
+if [ "$2" == "android" ]; then
 
 cd target
-git clone --single-branch --branch 0.11.x https://bitbucket.org/MartinFelis/love-android-sdl2
+git clone --single-branch --branch 0.10.x https://bitbucket.org/MartinFelis/love-android-sdl2
+#git clone https://bitbucket.org/MartinFelis/love-android-sdl2
+mkdir -p love-android-sdl2/app/src/main/assets
+cp "${P}".love love-android-sdl2/app/src/main/assets/game.love
 wget https://dl.google.com/android/repository/android-ndk-"${NDK_VER}"-linux-x86_64.zip -O android-ndk.zip
 echo Installing android NDK...
 unzip android-ndk 1> /dev/null 2>&1
@@ -90,7 +94,7 @@ echo Installing android SDK tools...
 unzip sdk-tools.zip 1> /dev/null 2>&1
 tools/bin/sdkmanager --update
 #yes | tools/bin/sdkmanager "build-tools;28.0.3" "platforms;android-28"
-yes | tools/bin/sdkmanager "build-tools;23.0.3" "platforms;android-23"
+#yes | tools/bin/sdkmanager "build-tools;23.0.3" "platforms;android-23"
 yes | tools/bin/sdkmanager --licenses 
 cd - 
 ANDROID_SDK=`pwd`/android-sdk
@@ -98,8 +102,15 @@ export ANDROID_SDK
 ANDROID_HOME=`pwd`/android-sdk
 export ANDROID_HOME
 cd love-android-sdl2
+cat <<EOF >local.properties
+ndk.dir=${ANDROID_NDK}
+sdk.dir=${ANDROID_SDK}
+EOF
 chmod +x gradlew
 ./gradlew build
+cd -
+cp love-android-sdl2/app/build/outputs/apk/debug/app-debug.apk "${P}"-debug.apk
+cp love-android-sdl2/app/build/outputs/apk/release/app-release-unsigned.apk "${P}"-release-unsigned.apk
 fi
 
 
@@ -107,20 +118,33 @@ fi
 
 if [ "$1" == "web" ]; then
 
-cd target
-rm -rf love.js *-web*
-git clone https://github.com/TannerRogalsky/love.js.git
-cd love.js
-git checkout 6fa910c2a28936c3ec4eaafb014405a765382e08
-git submodule update --init --recursive
+#cd target
+#rm -rf love.js *-web*
+#git clone https://github.com/TannerRogalsky/love.js.git
 
-cd release-compatibility
-python ../emscripten/tools/file_packager.py game.data --preload ../../../target/src/@/ --js-output=game.js
-python ../emscripten/tools/file_packager.py game.data --preload ../../../target/src/@/ --js-output=game.js
+#cd love.js
+
+#git checkout 6fa910c2a28936c3ec4eaafb014405a765382e08
+#git submodule update --init --recursive
+
+#cd release-compatibility
+#python ../emscripten/tools/file_packager.py game.data --preload ../../../target/src/@/ --js-output=game.js
+#python ../emscripten/tools/file_packager.py game.data --preload ../../../target/src/@/ --js-output=game.js
 #yes, two times!
 # python -m SimpleHTTPServer 8000
-cd ../..
-cp -r love.js/release-compatibility "$P-web"
-zip -9 -r - "$P-web" > "${P}-web.zip"
+#cd ../..
+#cp -r love.js/release-compatibility "$P-web"
+#zip -9 -r - "$P-web" > "${P}-web.zip"
 # target/$P-web/ goes to webserver
+
+#git clone --single-branch --branch 0.11 https://github.com/TannerRogalsky/love.js
+
+wget https://nodejs.org/dist/"${NV}"/node-"${NV}"-linux-x64.tar.xz -O target/node-linux-x64.tar.xz
+cd target
+tar xf node-linux-x64.tar.xz
+[[ ":$PATH:" != *":`pwd`/node-"${NV}"-linux-x64/bin:"* ]] && PATH="`pwd`/node-"${NV}"-linux-x64/bin:${PATH}"
+npm install -g love.js
+love.js --title "$P" "${P}".love "$P-web"
+zip -9 -r - "$P-web" > "${P}-web.zip"
+
 fi
