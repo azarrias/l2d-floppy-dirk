@@ -76,6 +76,16 @@ rm -r "$tmp"
 ### android (WIP) 
 ### love2d 11.2 does not seem to be supported for now
 if [ "$2" == "android" ]; then
+
+# install Java 8
+sudo add-apt-repository -y ppa:openjdk-r/ppa
+sudo apt-get -qq update
+sudo apt-get install -y openjdk-8-jdk --no-install-recommends
+sudo update-java-alternatives -s java-1.8.0-openjdk-amd64
+
+# change JAVA_HOME to Java 8
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
 cd target
 git clone --single-branch --branch 0.10.x https://bitbucket.org/MartinFelis/love-android-sdl2
 #git clone https://bitbucket.org/MartinFelis/love-android-sdl2
