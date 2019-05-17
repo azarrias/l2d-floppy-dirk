@@ -1,14 +1,11 @@
 dist: trusty
 language: generic
-sudo: false
 install: true
 
 addons:
   apt:
     packages:
-    - openjdk8
     - lua5.1
-    - python2.7
 jdk: openjdk8
 
 script: "[[ -n $TRAVIS_TAG ]] && ./build.sh web android || ./build.sh" # web and android only for tags    
