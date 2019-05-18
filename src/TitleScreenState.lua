@@ -11,6 +11,9 @@ function TitleScreenState:render()
   love.graphics.setFont(bigFont)
   love.graphics.printf(GAME_TITLE, 0, 64, VIRTUAL_WIDTH, 'center')
   love.graphics.setFont(mediumFont)
-  love.graphics.printf('Press Enter', 0, 100, VIRTUAL_WIDTH, 'center')
+  if MOBILE_OS then
+    love.graphics.printf('Tap on the screen', 0, 100, VIRTUAL_WIDTH, 'center')
+  else
+    love.graphics.printf('Press Enter', 0, 100, VIRTUAL_WIDTH, 'center')
+  end
 end
-  

@@ -10,10 +10,10 @@ require 'PlayState'
 require 'TitleScreenState'
 require 'ScoreState'
 
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
-VIRTUAL_WIDTH = 512
-VIRTUAL_HEIGHT = 288
+MOBILE_OS = (love._version_major > 0 or love._version_minor >= 9) and (love.system.getOS() == 'Android' or love.system.getOS() == 'OS X')
+
+WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
+VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 512, 288
 GROUND_HEIGHT = 16
 GAME_TITLE = 'Floppy Dirk'
 
@@ -26,7 +26,6 @@ local BACKGROUND_SCROLL_SPEED = 30
 local BACKGROUND_LOOPING_X = 413
 local GROUND_SCROLL_SPEED = 60
 local NEW_COLOR_RANGE = love._version_major > 0 or love._version_major == 0 and love._version_minor >= 11
-local MOBILE_OS = (love._version_major > 0 or love._version_major >= 9) and (love.system.getOS() == 'Android' or love.system.getOS() == 'OS X')
 
 -- Wrapper functions to handle differences across love2d versions
 local setColor = function(r, g, b, a)
@@ -111,6 +110,11 @@ function love.keypressed(key)
   end
 end
 
+function love.touchpressed(id, x, y, dx, dy, pressure)
+  love.keyboard.keysPressed['enter'] = true
+  love.keyboard.keysPressed['space'] = true
+end
+
 function love.update(dt)
   backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_X
   groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
@@ -124,7 +128,7 @@ end
 function love.draw()
   push:start()
   love.graphics.draw(background, -backgroundScroll, 0)
-  
+
   stateMachine:render()
   
   love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - GROUND_HEIGHT)

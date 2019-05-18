@@ -77,7 +77,8 @@ rm -r "$tmp"
 ### love2d 11.2 does not seem to be supported for now
 if [ "$2" == "android" ]; then
 cd target
-git clone --single-branch --branch 0.10.x https://bitbucket.org/MartinFelis/love-android-sdl2
+#git clone --single-branch --branch 0.10.x https://bitbucket.org/MartinFelis/love-android-sdl2
+git clone --single-branch --branch 0.10.x https://bitbucket.org/azarrias/love-android-sdl2
 #git clone https://bitbucket.org/MartinFelis/love-android-sdl2
 mkdir -p love-android-sdl2/app/src/main/assets
 cp "${P}".love love-android-sdl2/app/src/main/assets/game.love
@@ -145,6 +146,7 @@ tar xf node-linux-x64.tar.xz 1> /dev/null 2>&1
 [[ ":$PATH:" != *":`pwd`/node-"${NV}"-linux-x64/bin:"* ]] && PATH="`pwd`/node-"${NV}"-linux-x64/bin:${PATH}"
 npm install -g love.js
 love.js --title "$P" "${P}".love "$P-web"
+# test with python -m SimpleHTTPServer 8000
 zip -9 -r - "$P-web" > "${P}-web.zip"
 
 fi

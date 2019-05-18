@@ -18,5 +18,9 @@ function ScoreState:render()
   love.graphics.setFont(mediumFont)
   love.graphics.printf('Score: ' .. tostring(self.score), 0, 100, VIRTUAL_WIDTH, 'center')
   
-  love.graphics.printf('Press Enter to play again!', 0, 160, VIRTUAL_WIDTH, 'center')
+  if MOBILE_OS then
+    love.graphics.printf('Tap on the screen to play again!', 0, 100, VIRTUAL_WIDTH, 'center')
+  else
+    love.graphics.printf('Press Enter to play again!', 0, 160, VIRTUAL_WIDTH, 'center')
+  end
 end
