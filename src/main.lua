@@ -11,6 +11,7 @@ require 'TitleScreenState'
 require 'ScoreState'
 
 MOBILE_OS = (love._version_major > 0 or love._version_minor >= 9) and (love.system.getOS() == 'Android' or love.system.getOS() == 'OS X')
+WEB_OS = (love._version_major > 0 or love._version_minor >= 9) and love.system.getOS() == 'Web'
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 512, 288
@@ -63,11 +64,17 @@ function love.load(arg)
   love.graphics.setDefaultFilter('nearest', 'nearest')
   love.window.setTitle(GAME_TITLE)
   math.randomseed(os.time())
-  
-  smallFont = love.graphics.newFont('assets/font.ttf', 8)
-  mediumFont = love.graphics.newFont('assets/flappy.ttf', 14)
-  bigFont = love.graphics.newFont('assets/flappy.ttf', 28)
-  hugeFont = love.graphics.newFont('assets/flappy.ttf', 56)
+
+  smallFont = love.graphics.newFont('assets/font.ttf', 8)  
+  if WEB_OS then
+    mediumFont = love.graphics.newFont('assets/font.ttf', 14)
+    bigFont = love.graphics.newFont('assets/font.ttf', 28)
+    hugeFont = love.graphics.newFont('assets/font.ttf', 56)
+  else
+    mediumFont = love.graphics.newFont('assets/flappy.ttf', 14)
+    bigFont = love.graphics.newFont('assets/flappy.ttf', 28)
+    hugeFont = love.graphics.newFont('assets/flappy.ttf', 56)
+  end
   love.graphics.setFont(bigFont)
   
   sounds = {
