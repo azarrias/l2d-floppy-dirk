@@ -82,7 +82,7 @@ function love.load(arg)
     ['explosion'] = love.audio.newSource('assets/explosion.wav', 'static'),
     ['hurt'] = love.audio.newSource('assets/hurt.wav', 'static'),
     ['score'] = love.audio.newSource('assets/score.wav', 'static'),
-    ['music'] = love.audio.newSource('assets/marios_way.mp3', 'stream')
+    ['music'] = love.audio.newSource('assets/marios_way.mp3', WEB_OS and 'static' or 'stream')
   }
   
   sounds['music']:setLooping(true)
